@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reema & Mandar — Wedding Invitation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #fdf8f0;
+  --gold: #c9a84c;
+  --gold-dark: #a07830;
+  --deep: #3a2a1a;
+  --text: #4a3728;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--cream); color: var(--text); font-family: 'Lato', sans-serif; overflow-x: hidden; }
+
+/* ══ ENVELOPE ══ */
+#envelope-screen {
+  position: fixed; inset: 0;
+  background: #f0ebe0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+#envelope-screen.hide { opacity: 0; transform: scale(1.04); pointer-events: none; }
+.env-invited-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+  letter-spacing: 0.4em; text-transform: uppercase;
+  color: #9a8060; margin-bottom: 30px;
+}
+.env-click {
+  cursor: pointer; width: min(400px, 88vw);
+  transition: transform 0.35s ease;
+}
+.env-click:hover { transform: translateY(-7px); }
+.env-svg-wrap { width: 100%; filter: drop-shadow(0 14px 40px rgba(80,60,10,0.22)) drop-shadow(0 4px 8px rgba(80,60,10,0.12)); }
+.env-svg-wrap svg { display: block; width: 100%; height: auto; }
+.envelope-hint {
+  margin-top: 44px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.88rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: #9a8060; animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{ opacity:0.4; } 50%{ opacity:1; } }
+
+/* ══ MAIN ══ */
+#main-content { display: none; }
+#main-content.visible { display: block; }
+
+/* HERO */
+.hero {
+  min-height: 100svh;
+  background: linear-gradient(180deg, #fdf8f0 0%, #f5e8d0 55%, #ecddb8 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 60px 24px 80px;
+  position: relative; overflow: hidden;
+}
+.corner { position: absolute; font-size: 3rem; color: var(--gold); opacity: 0.15; pointer-events:none; }
+.corner-tl { top:18px; left:18px; }
+.corner-tr { top:18px; right:18px; transform:scaleX(-1); }
+.corner-bl { bottom:80px; left:18px; transform:scaleY(-1); }
+.corner-br { bottom:80px; right:18px; transform:scale(-1); }
+
+.gold-divider {
+  width:120px; height:1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 14px auto;
+}
+
+.ganesh-blessing {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  color: var(--gold-dark); letter-spacing: 0.15em;
+  margin-bottom: 20px;
+  opacity:0; animation: fadeUp 1s ease 0.3s forwards;
+}
+.hero-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 24px;
+  opacity:0; animation: fadeUp 1s ease 0.5s forwards;
+}
+
+/* ── Names — fully centred, same style ── */
+.names-section {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0;
+  opacity:0; animation: fadeUp 1s ease 0.7s forwards;
+  width: 100%;
+}
+
+/* Each person is a centred column */
+.person-block {
+  display: flex; flex-direction: column;
+  align-items: center;        /* horizontally centre children */
+  text-align: center;         /* centre text inside children  */
+}
+
+/* Identical style for both names */
+.person-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  font-weight: 400; font-style: italic;
+  line-height: 1.05; color: var(--deep);
+}
+
+/* Parents line: max-width tied to name width so it wraps under it */
+.person-parents {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+  color: #7a6040; letter-spacing: 0.03em;
+  margin-top: 7px;
+  line-height: 1.5;
+  /* let it shrink to the name's natural width */
+  max-width: 100%;
+  width: max-content;     /* fit content so centering is tight */
+  max-width: min(420px, 90vw);
+}
+
+.ampersand {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 9vw, 4.5rem);
+  color: var(--gold); line-height: 1; font-style: italic;
+  opacity:0; animation: fadeUp 1s ease 0.85s forwards;
+  margin: 10px 0;
+}
+
+.are-married {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); margin-top: 20px;
+  opacity:0; animation: fadeUp 1s ease 1.0s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.scroll-cue {
+  position: absolute; bottom: 28px; left: 0; right: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  color: var(--gold); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  opacity:0; animation: fadeUp 1s ease 1.8s forwards;
+  margin: 0 auto;
+}
+.scroll-arrow {
+  width:18px; height:18px;
+  border-right:1.5px solid var(--gold); border-bottom:1.5px solid var(--gold);
+  transform: rotate(45deg); animation: bounce 1.5s ease infinite;
+}
+@keyframes bounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(5px)} }
+
+/* SCRATCH */
+.scratch-section {
+  background: linear-gradient(180deg, #ecddb8 0%, #f5e8d0 100%);
+  padding: 70px 20px; text-align: center;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-style: italic; color: var(--deep); margin-bottom: 8px;
+}
+.ornament {
+  font-size: 1.2rem; color: var(--gold);
+  display: block; margin: 0 auto 14px; letter-spacing: 0.5em;
+}
+.scratch-cards {
+  display: flex; gap: 24px; justify-content: center;
+  flex-wrap: wrap; margin-top: 28px;
+}
+.scratch-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.scratch-card {
+  width: 110px; height: 110px; border-radius: 14px;
+  border: 2px solid var(--gold);
+  box-shadow: 0 6px 20px rgba(120,80,0,0.15);
+  cursor: pointer; position: relative; overflow: hidden;
+}
+.card-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cream);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.scratch-card.revealed .card-inner { opacity: 1; }
+.scratch-card.revealed .grey-cover { opacity: 0; pointer-events: none; }
+.grey-cover {
+  position: absolute; inset: 0; background: #b0aca8;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.4s ease; border-radius: 12px;
+}
+.grey-cover-icon { font-size: 1.6rem; opacity: 0.45; color: #fff; }
+.reveal-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem; font-weight: 700; color: var(--deep); line-height: 1;
+}
+.reveal-text-month {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-style: italic; color: var(--deep);
+}
+.card-label-below {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dark);
+}
+.scratch-hint {
+  margin-top: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.88rem; letter-spacing: 0.12em; color: var(--gold-dark); font-style: italic;
+}
+
+/* DETAILS */
+.details-section {
+  padding: 70px 20px;
+  background: linear-gradient(180deg, #f5e8d0 0%, #fdf8f0 100%);
+}
+.details-grid {
+  max-width: 560px; margin: 28px auto 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+}
+@media(max-width:460px){ .details-grid { grid-template-columns: 1fr; } }
+.detail-card {
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 16px; padding: 26px 18px; text-align: center;
+  box-shadow: 0 4px 20px rgba(120,80,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.detail-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(120,80,0,0.13); }
+.detail-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+.detail-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+}
+.detail-card-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.45rem; font-style: italic; color: var(--deep); line-height: 1.2;
+}
+.detail-card-sub {
+  font-family: 'Lato', sans-serif; font-size: 0.72rem; color: #7a6040; margin-top: 5px;
+}
+
+/* VENUE */
+.venue-section {
+  padding: 70px 20px; background: #fdf8f0; text-align: center;
+}
+.venue-box {
+  max-width: 540px; margin: 26px auto 0;
+  background: linear-gradient(135deg, #fdf5e6, #f5e8cc);
+  border: 1px solid var(--gold); border-radius: 20px;
+  padding: 34px 26px; position: relative; overflow: hidden;
+}
+.venue-box::before { content:'✦'; position:absolute; top:10px; left:14px; color:var(--gold); opacity:0.22; font-size:1.2rem; }
+.venue-box::after  { content:'✦'; position:absolute; bottom:10px; right:14px; color:var(--gold); opacity:0.22; font-size:1.2rem; }
+.venue-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.3rem, 5vw, 1.8rem); color: var(--deep); margin-bottom: 10px;
+}
+.venue-address {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; color: #7a6040; line-height: 1.7;
+}
+.map-btn {
+  display: inline-block; margin-top: 16px; padding: 11px 26px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #fff; border-radius: 50px;
+  font-family: 'Lato', sans-serif; font-size: 0.72rem;
+  letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none;
+  box-shadow: 0 4px 14px rgba(160,120,48,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.map-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(160,120,48,0.4); }
+
+/* FOOTER */
+.footer {
+  padding: 42px 20px; background: var(--deep); text-align: center;
+}
+.footer p {
+  font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+  color: var(--gold); letter-spacing: 0.1em;
+}
+.footer .footer-names { font-size: 1.45rem; font-style: italic; margin-bottom: 8px; }
+
+/* COUNTDOWN */
+#countdown-reveal {
+  display: none;
+  margin-top: 36px;
+  animation: fadeUp 0.8s ease forwards;
+}
+.countdown-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.82rem, 2.2vw, 0.95rem);
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold-dark); margin-bottom: 16px;
+  font-style: italic;
+}
+.countdown-grid {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+}
+.countdown-unit {
+  display: flex; flex-direction: column; align-items: center;
+  background: linear-gradient(135deg, #fdf5e6, #f5e8cc);
+  border: 1px solid var(--gold); border-radius: 14px;
+  padding: 16px 20px; min-width: 74px;
+  box-shadow: 0 4px 16px rgba(120,80,0,0.1);
+}
+.countdown-num {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 700; color: var(--deep); line-height: 1;
+}
+.countdown-unit-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold-dark); margin-top: 6px;
+}
+
+/* MUSIC BUTTON */
+#music-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(160,120,48,0.45);
+  display: none; align-items: center; justify-content: center;
+  font-size: 1.3rem; transition: transform 0.2s;
+}
+#music-btn:hover { transform: scale(1.1); }
+</style>
+</head>
+<body>
+
+<!-- MUSIC TOGGLE BUTTON -->
+<button id="music-btn" title="Toggle music" onclick="toggleMusic()">🎵</button>
+
+<!-- ══ ENVELOPE ══ -->
+<div id="envelope-screen">
+  <p class="env-invited-text">You are cordially invited</p>
+  <div class="env-click" onclick="openEnvelope()">
+    <div class="env-svg-wrap">
+      <svg viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sealGrad" cx="38%" cy="35%" r="65%">
+            <stop offset="0%"   stop-color="#f5d870"/>
+            <stop offset="55%"  stop-color="#c09030"/>
+            <stop offset="100%" stop-color="#8a6010"/>
+          </radialGradient>
+          <radialGradient id="sealShine" cx="30%" cy="28%" r="50%">
+            <stop offset="0%"  stop-color="rgba(255,240,160,0.55)"/>
+            <stop offset="100%" stop-color="rgba(255,240,160,0)"/>
+          </radialGradient>
+          <filter id="envshadow" x="-8%" y="-8%" width="120%" height="135%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="rgba(80,60,10,0.18)"/>
+          </filter>
+        </defs>
+        <rect x="2" y="2" width="496" height="316" rx="5" ry="5"
+              fill="#faf7f0" stroke="#ddd0b0" stroke-width="1.5" filter="url(#envshadow)"/>
+        <polygon points="2,318 2,155 252,215" fill="#f0eada" stroke="#ddd0b0" stroke-width="1"/>
+        <polygon points="498,318 498,155 248,215" fill="#ede7d2" stroke="#ddd0b0" stroke-width="1"/>
+        <polygon points="2,318 498,318 248,215" fill="#f5f0e4" stroke="#ddd0b0" stroke-width="1"/>
+        <polygon points="2,2 498,2 250,188" fill="#f2ece0" stroke="#ddd0b0" stroke-width="1.5"/>
+        <circle cx="250" cy="188" r="42" fill="url(#sealGrad)"/>
+        <circle cx="250" cy="188" r="42" fill="url(#sealShine)"/>
+        <circle cx="250" cy="188" r="41" fill="none" stroke="rgba(200,160,40,0.5)" stroke-width="1.5"/>
+        <circle cx="250" cy="188" r="35" fill="none" stroke="rgba(200,160,40,0.25)" stroke-width="0.8"/>
+        <path d="M250,201 C250,201 233,189 233,180 C233,174 238,170 244,173 C247,174 250,178 250,178 C250,178 253,174 256,173 C262,170 267,174 267,180 C267,189 250,201 250,201 Z"
+              fill="rgba(255,255,255,0.8)"/>
+      </svg>
+    </div>
+  </div>
+  <p class="envelope-hint">✦ click to open ✦</p>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main-content">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="corner corner-tl">❧</span>
+    <span class="corner corner-tr">❧</span>
+    <span class="corner corner-bl">❧</span>
+    <span class="corner corner-br">❧</span>
+
+    <p class="ganesh-blessing">ॐ गं गणपतये नमः |</p>
+    <div class="gold-divider"></div>
+    <p class="hero-subtitle">Together with their families</p>
+
+    <div class="names-section">
+
+      <div class="person-block">
+        <div class="person-name">Reema Borkar</div>
+        <div class="person-parents">Daughter of Mrs. Pooja &amp; Mr. Prakash Narayan Borkar</div>
+      </div>
+
+      <div class="ampersand">&amp;</div>
+
+      <div class="person-block">
+        <div class="person-name">Mandar Parkar</div>
+        <div class="person-parents">Son of Mrs. Sujata &amp; Mr. Bhushan Narayan Parkar</div>
+      </div>
+
+    </div>
+
+    <p class="are-married">are getting married!</p>
+
+    <div class="scroll-cue">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- SCRATCH THE DATE -->
+  <section class="scratch-section">
+    <span class="ornament">✦ ✦ ✦</span>
+    <h2 class="section-title">Scratch the Date</h2>
+    <div class="scratch-cards">
+      <div class="scratch-wrapper">
+        <div class="scratch-card" id="sc-day" onclick="revealCard('sc-day')">
+          <div class="card-inner"><span class="reveal-value">24</span></div>
+          <div class="grey-cover"><span class="grey-cover-icon">✦</span></div>
+        </div>
+        <span class="card-label-below">Day</span>
+      </div>
+      <div class="scratch-wrapper">
+        <div class="scratch-card" id="sc-month" onclick="revealCard('sc-month')">
+          <div class="card-inner"><span class="reveal-text-month">June</span></div>
+          <div class="grey-cover"><span class="grey-cover-icon">✦</span></div>
+        </div>
+        <span class="card-label-below">Month</span>
+      </div>
+      <div class="scratch-wrapper">
+        <div class="scratch-card" id="sc-year" onclick="revealCard('sc-year')">
+          <div class="card-inner"><span class="reveal-value">2026</span></div>
+          <div class="grey-cover"><span class="grey-cover-icon">✦</span></div>
+        </div>
+        <span class="card-label-below">Year</span>
+      </div>
+    </div>
+    <p class="scratch-hint">— click each box to unveil the date —</p>
+
+    <!-- COUNTDOWN (appears after all 3 cards revealed) -->
+    <div id="countdown-reveal">
+      <p class="countdown-label">✦ counting down to the big day ✦</p>
+      <div class="countdown-grid">
+        <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit-label">Days</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-unit-label">Hours</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-unit-label">Minutes</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-unit-label">Seconds</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE CELEBRATION -->
+  <section class="details-section">
+    <div style="text-align:center;">
+      <span class="ornament">✦ ✦ ✦</span>
+      <h2 class="section-title">The Celebration</h2>
+    </div>
+    <div class="details-grid">
+      <div class="detail-card">
+        <span class="detail-icon">🕛</span>
+        <p class="detail-card-title">Muhurat</p>
+        <p class="detail-card-value">12:35 PM</p>
+        <p class="detail-card-sub">Auspicious Wedding Time</p>
+      </div>
+      <div class="detail-card">
+        <span class="detail-icon">🍽️</span>
+        <p class="detail-card-title">Lunch Reception</p>
+        <p class="detail-card-value">1:00 – 4:00 PM</p>
+        <p class="detail-card-sub">Join us for a celebratory meal</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENUE -->
+  <section class="venue-section">
+    <span class="ornament">✦ ✦ ✦</span>
+    <h2 class="section-title">The Venue</h2>
+    <div class="venue-box">
+      <p class="venue-name">Vanita Samaj</p>
+      <div class="gold-divider" style="width:60px;"></div>
+      <p class="venue-address">
+        Swatantryaveer Savarkar Rd,<br>
+        Dadar West, Shivaji Park,<br>
+        Mumbai, Maharashtra 400028
+      </p>
+      <a href="https://maps.google.com/?q=Vanita+Samaj+Dadar+West+Mumbai" target="_blank" class="map-btn">📍 View on Map</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p class="footer-names">Reema &amp; Mandar</p>
+    <p>With love &amp; joy — June 24, 2026</p>
+    <div style="margin-top:12px;">
+      <div class="gold-divider" style="background:linear-gradient(90deg,transparent,var(--gold-dark),transparent);opacity:0.4;"></div>
+    </div>
+    <p style="margin-top:12px;font-size:0.78rem;opacity:0.5;">ॐ गं गणपतये नमः |</p>
+  </footer>
+
+</div>
+
+<!-- HTML5 audio — mere_sohneya.mp3 must sit in the same folder as index.html -->
+<audio id="bg-audio" src="mere_sohneya.mpeg" loop preload="auto" style="display:none;"></audio>
+
+<script>
+/* ══════════════════════════════════════════════
+   MUSIC — mere_sohneya.mpeg (local file, same folder)
+   Triggered by envelope click, loops automatically
+   ══════════════════════════════════════════════ */
+
+let musicPlaying = false;
+const audio = document.getElementById('bg-audio');
+audio.volume = 0.8;
+
+function startMusic() {
+  musicPlaying = true;
+  const btn = document.getElementById('music-btn');
+  btn.style.display = 'flex';
+  btn.textContent = '🎵';
+  audio.play().catch(() => {
+    // Browser blocked autoplay — button is visible so user can tap manually
+  });
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('music-btn');
+  if (musicPlaying) {
+    musicPlaying = false;
+    audio.pause();
+    btn.textContent = '🔇';
+  } else {
+    musicPlaying = true;
+    audio.play();
+    btn.textContent = '🎵';
+  }
+}
+
+/* ── ENVELOPE ── */
+function openEnvelope() {
+  const screen = document.getElementById('envelope-screen');
+  const main   = document.getElementById('main-content');
+  screen.classList.add('hide');
+  startMusic();
+  setTimeout(() => {
+    screen.style.display = 'none';
+    main.classList.add('visible');
+    window.scrollTo(0,0);
+  }, 900);
+}
+
+/* ── SCRATCH CARDS ── */
+const revealedCards = { 'sc-day': false, 'sc-month': false, 'sc-year': false };
+
+function revealCard(id) {
+  const card = document.getElementById(id);
+  if (!card.classList.contains('revealed')) {
+    card.classList.add('revealed');
+    card.style.cursor = 'default';
+    revealedCards[id] = true;
+    if (revealedCards['sc-day'] && revealedCards['sc-month'] && revealedCards['sc-year']) {
+      showCountdown();
+    }
+  }
+}
+
+/* ── COUNTDOWN ── */
+function showCountdown() {
+  const el = document.getElementById('countdown-reveal');
+  el.style.display = 'block';
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function updateCountdown() {
+  const weddingDate = new Date('2026-06-24T12:35:00+05:30');
+  const now = new Date();
+  let diff = weddingDate - now;
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '0';
+    document.getElementById('cd-hours').textContent = '0';
+    document.getElementById('cd-mins').textContent = '0';
+    document.getElementById('cd-secs').textContent = '0';
+    return;
+  }
+  const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+  document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+}
+</script>
+</body>
+</html>
